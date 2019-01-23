@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
+const cors = require("cors");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    cb(null, "upload");
+    cb(null, "uploads");
   },
   filename: function(req, file, cb) {
     cb(null, file.originalname);
@@ -18,9 +19,17 @@ const upload = multer({
 
 const fs = require("fs");
 
-app.post("/upload", upload.array("photos", 5), (req, res) => {
-  console.log(req.files);
-  res.end();
+app.use(cors());
+
+fs.readdir("./uploads", "utf8", function(err, data) {
+  if (err) {
+    return console.log(err);
+  }
+  console.log(data);
+});
+
+app.post("/upload", upload.array("file"), (req, res) => {
+  res.status(200).send();
 });
 
 app.listen(3030, () => {
